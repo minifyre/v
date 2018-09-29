@@ -14,6 +14,15 @@ export default function v(selector,props={},...children)
 	.split(' ').filter(x=>x.length).concat(classes).join(' '):''
 	return {type,props,children,on}
 }
+v.util=
+{
+}
+v.util.update=function(fn,el,newObj,oldObj={})
+{
+	keys(assign({},newObj,oldObj))
+	.forEach(prop=>fn(el,prop,newObj[prop],oldObj[prop]))
+}
+
 v.changed=(a,b)=>typeof a!==typeof b||typeof a==='string'&&a!==b||a.type!==b.type
 v.el=function(node)
 {
@@ -37,19 +46,6 @@ v.evtsSet=function(el,evts)
 	entries(evts)
 	.forEach(([evt,args])=>v.evtSet(el,evt,args))//@todo use reduce here
 }
-v.evtUpdate=function(el,type,[newFn,...newOpts],[oldFn,...oldOpts])
-{
-	if(!newFn) removeEvt(el,type,oldVal)
-	else if(!oldFn||((''+newFn)!==(''+oldFn)&&v.equal(newOpts,oldOpts)))
-	{
-		v.evtSet(el,type,newVal)
-	}
-}
-v.evtsUpdate=function(el,newEvts,oldEvts={})
-{
-	keys(assign({},newEvts,oldEvts))
-	.forEach(prop=>v.evtUpdate(el,prop,newEvts[prop],oldEvts[prop]))
-}
 v.propDel=function(el,prop,val)
 {
 	if(prop==='value') el[prop]=''
@@ -62,19 +58,9 @@ v.propSet=function(el,prop,val)//@todo handle checked & value
 	else if(typeof val==='boolean') el[prop]=val
 	el.setAttribute(prop,val)
 }
-v.propUpdate=function(el,prop,newVal,oldVal)
-{
-	if(!newVal) v.propDel(el,prop,oldVal)
-	else if(!oldVal||newVal!==oldVal) v.propSet(el,prop,newVal)
-}
 v.propsSet=function(el,props)//@todo use reduce here
 {
 	entries(props).forEach(([prop,val])=>v.propSet(el,prop,val))
-}
-v.propsUpdate=function(el,newProps,oldProps={})
-{
-	keys(assign({},newProps,oldProps))
-	.forEach(prop=>v.propUpdate(el,prop,newProps[prop],oldProps[prop]))
 }
 v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 {
@@ -84,8 +70,8 @@ v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 	else if(v.changed(newNode,oldNode)) parent.replaceChild(v.el(newNode),child)
 	else if(newNode.type)
 	{
-		v.evtsUpdate(child,newNode.on,oldNode.on)
-		v.propsUpdate(child,newNode.props,oldNode.props)
+		v.updateEvts(child,newNode.on,oldNode.on)
+		v.updateProps(child,newNode.props,oldNode.props)
 		const max=Math.max(newNode.children.length,oldNode.children.length)
 		let adj=0
 		for (let i=0;i<max;i++)
@@ -100,4 +86,19 @@ v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 		}
 	}
 	return 0// suggest that an element has not been removed
+}
+v.updateEvts=(...args)=>v.util.update(v.updateEvt,...args)
+v.updateEvt=function(el,type,[newFn,...newOpts],[oldFn,...oldOpts])
+{
+	if(!newFn) removeEvt(el,type,oldVal)
+	else if(!oldFn||((''+newFn)!==(''+oldFn)&&v.util.equal(newOpts,oldOpts)))
+	{
+		v.evtSet(el,type,newVal)
+	}
+}
+v.updateProps=(...args)=>v.util.update(v.updateProp,...args)
+v.updateProp=function(el,prop,newVal,oldVal)
+{
+	if(!newVal) v.propDel(el,prop,oldVal)
+	else if(!oldVal||newVal!==oldVal) v.propSet(el,prop,newVal)
 }
