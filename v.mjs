@@ -16,22 +16,22 @@ export default function v(selector,props={},...children)
 }
 v.util=
 {
-	equal:(a,b)=>JSON.stringify(a)===JSON.stringify(b)
+	equal:(a,b)=>JSON.stringify(a)===JSON.stringify(b),
+	setAll:(fn,el,obj)=>entries(obj).forEach(([prop,val])=>fn(el,prop,val))
 }
 v.util.update=function(fn,el,newObj,oldObj={})
 {
 	keys(assign({},newObj,oldObj))
 	.forEach(prop=>fn(el,prop,newObj[prop],oldObj[prop]))
 }
-
 v.changed=(a,b)=>typeof a!==typeof b||typeof a==='string'&&a!==b||a.type!==b.type
 v.el=function(node)
 {
 	if(typeof node==='string') return document.createTextNode(node)
 
 	const el=document.createElement(node.type)
-	v.propsSet(el,node.props)//@todo chain these
-	v.evtsSet(el,node.on)
+	v.setProps(el,node.props)//@todo chain these
+	v.setEvts(el,node.on)
 
 	node.children
 	.map(v.el)
@@ -41,11 +41,6 @@ v.el=function(node)
 }
 v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
-v.evtsSet=function(el,evts)
-{
-	entries(evts)
-	.forEach(([evt,args])=>v.evtSet(el,evt,args))//@todo use reduce here
-}
 v.propDel=function(el,prop,val)
 {
 	if(prop==='value') el[prop]=''
@@ -58,10 +53,8 @@ v.propSet=function(el,prop,val)//@todo handle checked & value
 	else if(typeof val==='boolean') el[prop]=val
 	el.setAttribute(prop,val)
 }
-v.propsSet=function(el,props)//@todo use reduce here
-{
-	entries(props).forEach(([prop,val])=>v.propSet(el,prop,val))
-}
+v.setEvts=(...args)=>v.util.setAll(v.evtSet,...args)
+v.setProps=(...args)=>v.util.setAll(v.propSet,...args)
 v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 {
 	if(oldNode==null) parent.appendChild(v.el(newNode))
