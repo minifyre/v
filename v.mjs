@@ -90,7 +90,7 @@ v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 v.updateEvts=(...args)=>v.util.update(v.updateEvt,...args)
 v.updateEvt=function(el,type,[newFn,...newOpts],[oldFn,...oldOpts])
 {
-	if(!newFn) removeEvt(el,type,oldVal)
+	if(!newFn) v.evtDel(el,type,oldVal)
 	else if(!oldFn||((''+newFn)!==(''+oldFn)&&v.util.equal(newOpts,oldOpts)))
 	{
 		v.evtSet(el,type,newVal)
