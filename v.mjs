@@ -84,8 +84,10 @@ v.updateEvts=(...args)=>v.util.update(v.updateEvt,...args)
 v.updateEvt=function(el,type,[newFn,...newOpts],[oldFn,...oldOpts])
 {
 	if(!newFn) v.evtDel(el,type,oldVal)
-	else if(!oldFn||((''+newFn)!==(''+oldFn)&&v.util.equal(newOpts,oldOpts)))
+	else if(!oldFn) v.evtSet(el,type,newVal)
+	else if ((''+newFn)!==(''+oldFn)||!v.util.equal(newOpts,oldOpts))
 	{
+		v.evtDel(el,type,oldVal)
 		v.evtSet(el,type,newVal)
 	}
 }
