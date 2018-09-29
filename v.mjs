@@ -16,6 +16,7 @@ export default function v(selector,props={},...children)
 }
 v.util=
 {
+	equal:(a,b)=>JSON.stringify(a)===JSON.stringify(b)
 }
 v.util.update=function(fn,el,newObj,oldObj={})
 {
@@ -38,7 +39,6 @@ v.el=function(node)
 
 	return el
 }
-v.equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b)
 v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
 v.evtsSet=function(el,evts)
