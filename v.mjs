@@ -41,7 +41,6 @@ v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
 v.flatUpdate=function(root,newNodes,oldNodes=[],start=0,stop=newNodes.length)
 {
-	console.log(start,stop)
 	newNodes.slice(start,stop)
 	.forEach(function(newNode,index)
 	{
