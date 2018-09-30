@@ -39,6 +39,19 @@ v.el=function(node)
 }
 v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
+v.flatUpdate=function(root,newNodes,oldNodes=[],start=0,stop=newNodes.length)
+{
+	console.log(start,stop)
+	newNodes.slice(start,stop)
+	.forEach(function(newNode,index)
+	{
+		const
+		i=index+start,
+		old=oldNodes[i]||null,//undefined triggers default params, null doesn't
+		child=root.childNodes[i]||null
+		v.update(root,newNode,old,child)
+	})
+}
 v.propDel=function(el,prop,val)
 {
 	if(prop==='value') el[prop]=''
