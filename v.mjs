@@ -39,6 +39,7 @@ v.el=function(node)
 }
 v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
+v.exists=x=>x!==null&&x!==undefined
 v.flatUpdate=function(root,newNodes,oldNodes=[],start=0,length=newNodes.length)
 {
 	newNodes.slice(start,start+length)
@@ -89,8 +90,8 @@ v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 }
 v.updateEvt=function(el,type,[newFn,...newOpts],[oldFn,...oldOpts])
 {
-	if(!newFn) v.evtDel(el,type,oldFn)
-	else if(!oldFn) v.evtSet(el,type,newFn)
+	if(!v.exists(newFn)) v.evtDel(el,type,oldFn)
+	else if(!v.exists(oldFn)) v.evtSet(el,type,newFn)
 	else if ((''+newFn)!==(''+oldFn)||!v.util.equal(newOpts,oldOpts))
 	{
 		v.evtDel(el,type,oldVal)
@@ -99,8 +100,8 @@ v.updateEvt=function(el,type,[newFn,...newOpts],[oldFn,...oldOpts])
 }
 v.updateProp=function(el,prop,newVal,oldVal)
 {
-	if(!newVal) v.propDel(el,prop,oldVal)
-	else if(!oldVal||newVal!==oldVal) v.propSet(el,prop,newVal)
+	if(!v.exists(newVal)) v.propDel(el,prop,oldVal)
+	else if(!v.exists(oldVal)||newVal!==oldVal) v.propSet(el,prop,newVal)
 }
 v.setEvts=curry(v.util.setAll,v.evtSet)
 v.setProps=curry(v.util.setAll,v.propSet)
