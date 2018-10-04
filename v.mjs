@@ -88,10 +88,13 @@ v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 	}
 	return 0//element has not been removed
 }
-v.updateEvt=function(el,type,[newFn,...newOpts],[oldFn,...oldOpts])
+v.updateEvt=function(el,type,newVal=[],oldVal=[])
 {
-	if(!v.exists(newFn)) v.evtDel(el,type,oldFn)
-	else if(!v.exists(oldFn)) v.evtSet(el,type,newFn)
+	const
+	[newFn,...newOpts]=newVal,
+	[oldFn,...oldOpts]=oldVal
+	if(!v.exists(newFn)) v.evtDel(el,type,oldVal)
+	else if(!v.exists(oldFn)) v.evtSet(el,type,newVal)
 	else if ((''+newFn)!==(''+oldFn)||!v.util.equal(newOpts,oldOpts))
 	{
 		v.evtDel(el,type,oldVal)
