@@ -35,8 +35,10 @@ v.el=function(node)
 	v.setProps(el,node.props)//@todo chain these
 	v.setEvts(el,node.on)
 	node.children.forEach(child=>el.appendChild(v.el(child)))
+	v.emit(el)
 	return el
 }
+v.emit=el=>el.dispatchEvent(new CustomEvent('render',{}))//detail=changed props?
 v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
 v.exists=x=>x!==null&&x!==undefined
