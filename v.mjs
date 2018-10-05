@@ -37,7 +37,7 @@ v.el=function(node)
 	node.children.forEach(child=>el.appendChild(v.el(child)))
 	return el
 }
-v.emit=(el,changes)=>el.dispatchEvent(new CustomEvent('render',{bubbles:false,detail:{changes}}))
+v.emit=(el,changes={})=>el.dispatchEvent(new CustomEvent('render',{bubbles:false,detail:{changes}}))
 v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
 v.exists=x=>x!==null&&x!==undefined
@@ -68,7 +68,12 @@ v.propSet=function(el,prop,val)
 }
 v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 {
-	if(oldNode==null) parent.appendChild(v.el(newNode))
+	if(oldNode==null)
+	{
+		const el=v.el(newNode)
+		parent.appendChild(el)
+		v.emit(el)
+	}
 	else if(newNode==null) return parent.removeChild(child),-1
 	else if(v.changed(newNode,oldNode)) parent.replaceChild(v.el(newNode),child)
 	else if(newNode.type)
