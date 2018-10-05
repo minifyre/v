@@ -22,8 +22,8 @@ v.util=
 	setAll:(fn,el,obj)=>entries(obj).forEach(([prop,val])=>fn(el,prop,val)),
 	update:function(fn,el,newObj,oldObj={})
 	{
-		keys(assign({},newObj,oldObj))
-		.forEach(prop=>fn(el,prop,newObj[prop],oldObj[prop]))
+		return keys(assign({},newObj,oldObj))
+		.filter(prop=>!fn(el,prop,newObj[prop],oldObj[prop]))
 	}
 }
 v.changed=(a,b)=>typeof a!==typeof b||typeof a==='string'&&a!==b||a.type!==b.type
@@ -37,9 +37,11 @@ v.el=function(node)
 	node.children.forEach(child=>el.appendChild(v.el(child)))
 	return el
 }
+v.emit=(el,changes={})=>el.dispatchEvent(new CustomEvent('render',{bubbles:false,detail:{changes}}))
 v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
 v.exists=x=>x!==null&&x!==undefined
+//@todo rename v.render & merge with v.update?
 v.flatUpdate=function(root,newNodes,oldNodes=[],start=0,length=newNodes.length)
 {
 	newNodes.slice(start,start+length)
@@ -66,13 +68,22 @@ v.propSet=function(el,prop,val)
 }
 v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 {
-	if(oldNode==null) parent.appendChild(v.el(newNode))
+	if(oldNode==null)
+	{
+		const el=v.el(newNode)
+		parent.appendChild(el)
+		v.emit(el)
+	}
 	else if(newNode==null) return parent.removeChild(child),-1
 	else if(v.changed(newNode,oldNode)) parent.replaceChild(v.el(newNode),child)
 	else if(newNode.type)
 	{
-		v.updateEvts(child,newNode.on,oldNode.on)
-		v.updateProps(child,newNode.props,oldNode.props)
+		const changes=
+		[
+			...v.updateEvts(child,newNode.on,oldNode.on),
+			...v.updateProps(child,newNode.props,oldNode.props)
+		]
+		if(changes.length) v.emit(child,changes)
 		const max=Math.max(newNode.children.length,oldNode.children.length)
 		let adj=0
 		for (let i=0;i<max;i++)
@@ -100,11 +111,13 @@ v.updateEvt=function(el,type,newVal=[],oldVal=[])
 		v.evtDel(el,type,oldVal)
 		v.evtSet(el,type,newVal)
 	}
+	else return 1//same
 }
 v.updateProp=function(el,prop,newVal,oldVal)
 {
 	if(!v.exists(newVal)) v.propDel(el,prop,oldVal)
 	else if(!v.exists(oldVal)||newVal!==oldVal) v.propSet(el,prop,newVal)
+	else return 1//same
 }
 v.setEvts=curry(v.util.setAll,v.evtSet)
 v.setProps=curry(v.util.setAll,v.propSet)
