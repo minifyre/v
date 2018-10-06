@@ -53,6 +53,7 @@ v.flatUpdate=function(root,newNodes,oldNodes=[],start=0,length=newNodes.length)
 		child=root.childNodes[i]||null
 		v.update(root,newNode,old,child)
 	})
+	return newNodes
 }
 v.propDel=function(el,prop,val)
 {
@@ -65,6 +66,11 @@ v.propSet=function(el,prop,val)
 	if(prop==='value') el[prop]=val
 	else if(typeof val==='boolean') el[prop]=val
 	el.setAttribute(prop,val)
+}
+v.render=function(root,state,mkView)
+{
+	let oldNodes=v.flatUpdate(root,mkView(state))
+	return ()=>oldNodes=v.flatUpdate(root,mkView(state),oldNodes)
 }
 v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 {
