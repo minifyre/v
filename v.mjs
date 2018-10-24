@@ -41,14 +41,6 @@ v.emit=(el,changes={})=>el.dispatchEvent(new CustomEvent('render',{bubbles:false
 v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
 v.exists=x=>x!==null&&x!==undefined
-//@todo rename v.render & merge with v.update?
-v.flatUpdate=function(root,newNodes,oldNodes=[])
-{
-	const update=curry(v.update,root)
-	//null does not trigger default params
-	newNodes.forEach((node,i)=>update(node,oldNodes[i]||null,root.childNodes[i]||null))
-	return newNodes
-}
 v.propDel=function(el,prop,val)
 {
 	if(prop==='value') el[prop]=''
@@ -63,10 +55,10 @@ v.propSet=function(el,prop,val)
 }
 v.render=function(root,state,mkView)
 {
-	let oldNodes=v.flatUpdate(root,mkView(state))
-	return ()=>oldNodes=v.flatUpdate(root,mkView(state),oldNodes)
+	let oldNodes=v.updateEls(root,mkView(state))
+	return ()=>oldNodes=v.updateEls(root,mkView(state),oldNodes)
 }
-v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
+v.updateEl=function(parent,newNode,oldNode,child=parent.childNodes[0])
 {
 	if(oldNode==null) v.emit(parent.appendChild(v.el(newNode)))
 	else if(newNode==null) return parent.removeChild(child),-1
@@ -83,7 +75,7 @@ v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 		let adj=0
 		for (let i=0;i<max;i++)
 		{
-			adj+=v.update
+			adj+=v.updateEl
 			(
 				child,
 				newNode.children[i],
@@ -93,6 +85,13 @@ v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 		}
 	}
 	return 0//element has not been removed
+}
+v.updateEls=function(root,newNodes,oldNodes=[])
+{
+	const update=curry(v.updateEl,root)
+	//null does not trigger default params
+	newNodes.forEach((node,i)=>update(node,oldNodes[i]||null,root.childNodes[i]||null))
+	return newNodes
 }
 v.updateEvt=function(el,type,newVal=[],oldVal=[])
 {
