@@ -74,12 +74,7 @@ v.render=function(root,state,mkView)
 }
 v.update=function(parent,newNode,oldNode,child=parent.childNodes[0])
 {
-	if(oldNode==null)
-	{
-		const el=v.el(newNode)
-		parent.appendChild(el)
-		v.emit(el)
-	}
+	if(oldNode==null) v.emit(parent.appendChild(v.el(newNode)))
 	else if(newNode==null) return parent.removeChild(child),-1
 	else if(v.changed(newNode,oldNode)) parent.replaceChild(v.el(newNode),child)
 	else if(newNode.type)
