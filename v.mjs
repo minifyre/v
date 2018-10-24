@@ -53,6 +53,13 @@ v.flatUpdate=function(root,newNodes,oldNodes=[])
 	})
 	return newNodes
 }
+v.flatUpdate=function(root,newNodes,oldNodes=[])
+{
+	const update=curry(v.update,root)
+	//null does not trigger default params
+	newNodes.forEach((node,i)=>update(node,oldNodes[i]||null,root.childNodes[i]||null))
+	return newNodes
+}
 v.propDel=function(el,prop,val)
 {
 	if(prop==='value') el[prop]=''
