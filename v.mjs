@@ -42,13 +42,11 @@ v.evtDel=(el,type,args)=>el.removeEventListener(type,...args)
 v.evtSet=(el,type,args)=>el.addEventListener(type,...args)
 v.exists=x=>x!==null&&x!==undefined
 //@todo rename v.render & merge with v.update?
-v.flatUpdate=function(root,newNodes,oldNodes=[],start=0,length=newNodes.length)
+v.flatUpdate=function(root,newNodes,oldNodes=[])
 {
-	newNodes.slice(start,start+length)
-	.forEach(function(newNode,index)
+	newNodes.forEach(function(newNode,i)
 	{
 		const
-		i=index+start,
 		old=oldNodes[i]||null,//undefined triggers default params, null doesn't
 		child=root.childNodes[i]||null
 		v.update(root,newNode,old,child)
