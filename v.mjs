@@ -44,17 +44,6 @@ v.exists=x=>x!==null&&x!==undefined
 //@todo rename v.render & merge with v.update?
 v.flatUpdate=function(root,newNodes,oldNodes=[])
 {
-	newNodes.forEach(function(newNode,i)
-	{
-		const
-		old=oldNodes[i]||null,//undefined triggers default params, null doesn't
-		child=root.childNodes[i]||null
-		v.update(root,newNode,old,child)
-	})
-	return newNodes
-}
-v.flatUpdate=function(root,newNodes,oldNodes=[])
-{
 	const update=curry(v.update,root)
 	//null does not trigger default params
 	newNodes.forEach((node,i)=>update(node,oldNodes[i]||null,root.childNodes[i]||null))
