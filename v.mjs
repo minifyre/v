@@ -1,6 +1,6 @@
 const
 {assign,entries,keys}=Object,
-curry=(fn,...xs)=>xs.length>=fn.length?fn(...xs):(...ys)=>curry(fn,...xs,...ys)
+curry=(fn,...xs)=>(...ys)=>fn(...xs,...ys)
 export default function v(selector,props={},...children)
 {
 	const
