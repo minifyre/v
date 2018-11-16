@@ -54,10 +54,13 @@ v.propSet=function(el,prop,val)
 	else if(typeof val==='boolean') el[prop]=val
 	el.setAttribute(prop,val)
 }
-v.render=function(root,state,mkView)
+v.render=function(root,state,mkView,condition=()=>true)
 {
 	let oldNodes=v.updateEls(root,mkView(state))
-	return ()=>oldNodes=v.updateEls(root,mkView(state),oldNodes)
+	return function(...args)
+	{
+		if(condition(...args)) oldNodes=v.updateEls(root,mkView(state),oldNodes)
+	}
 }
 v.updateEl=function(parent,newNode,oldNode,child=parent.childNodes[0])
 {
