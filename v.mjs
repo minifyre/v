@@ -13,7 +13,8 @@ export default function v(selector,props={},...children)
 	delete props.data
 	classes.length?props.class=(props.class||'')
 	.split(' ').filter(x=>x.length).concat(classes).join(' '):''
-	return {type,props,children,on}
+
+	return {type,props,children:children.map(x=>typeof x==='number'?''+x:x),on}
 }
 v.util=
 {
@@ -29,7 +30,7 @@ v.util=
 v.changed=(a,b)=>typeof a!==typeof b||typeof a==='string'&&a!==b||a.type!==b.type
 v.el=function(node)
 {
-	if(['string','number'].includes(typeof node)) return document.createTextNode(node)
+	if(typeof node==='string') return document.createTextNode(node)
 
 	const el=document.createElement(node.type)
 	v.setProps(el,node.props)//@todo chain these
