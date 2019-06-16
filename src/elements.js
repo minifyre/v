@@ -1,11 +1,12 @@
-import {changed,curry} from './util'
+import {changed,curry} from './util.js'
 import {evtEmit,evtsSet,evtsUpdate} from './events.js'
 import {propsSet,propUpdates} from './props.js'
 
 export const
 element=(node='')=>
 {
-	if(typeof node==='string') return document.createTextNode(node)
+	if(typeof node==='string'||typeof node==='number')
+		return document.createTextNode(node)
 
 	const el=document.createElement(node.type)
 

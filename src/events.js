@@ -1,4 +1,4 @@
-import {curry,equal,exists,setAll,updateFactory} from './util'
+import {curry,equal,exists,setAll,updateFactory} from './util.js'
 
 export const
 evtDel=(el,type,args)=>el.removeEventListener(type,...args),

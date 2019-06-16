@@ -1,4 +1,4 @@
-import {curry,exists,setAll,updateFactory} from './util'
+import {curry,exists,setAll,updateFactory} from './util.js'
 
 export const
 propDel=(el,prop,val)=>
