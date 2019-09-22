@@ -3,7 +3,7 @@ import {updateElements} from './elements.js'
 
 const curry=(fn,...xs)=>xs.length>=fn.length?fn(...xs):(...ys)=>curry(fn,...xs,...ys)
 
-export default function v(selector,props={},...children)
+const v=(selector,props={},...children)=>
 {
 	const
 	[nodeType,...classes]=selector.split('.'),
@@ -26,8 +26,8 @@ export default function v(selector,props={},...children)
 		''
 
 	return {type,props,children:children.map(toString),on}
-}
-v.render=curry((root,mkView,state,condition=()=>true)=>
+},
+render=curry((root,mkView,state,condition=()=>true)=>
 {
 	let oldNodes=updateElements(root,mkView(state))
 
@@ -38,4 +38,9 @@ v.render=curry((root,mkView,state,condition=()=>true)=>
 	{
 		if(condition(...args)) oldNodes=updateElements(root,mkView(state),oldNodes)
 	}
+})
+
+export default new Proxy(v,
+{
+	get:(obj,prop)=>prop==='render'?render:(...args)=>v(prop,...args)
 })
