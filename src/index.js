@@ -40,6 +40,7 @@ render=curry((root,mkView,state,condition=()=>true)=>
 	}
 })
 
+export {forceEvtUpdate} from './events.js'
 export default new Proxy(v,
 {
 	get:(obj,prop)=>prop==='render'?render:(...args)=>v(prop,...args)
