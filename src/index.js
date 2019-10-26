@@ -1,6 +1,7 @@
 import {assign,entries,toString,wrapInArray} from './util.js'
 import {updateElements} from './elements.js'
 
+const ERROR=`The view generator function must return an array`
 const curry=(fn,...xs)=>xs.length>=fn.length?fn(...xs):(...ys)=>curry(fn,...xs,...ys)
 
 const v=(selector,props={},...children)=>
@@ -31,8 +32,7 @@ render=curry((root,mkView,state,condition=()=>true)=>
 {
 	let oldNodes=updateElements(root,mkView(state))
 
-	if(!Array.isArray(oldNodes))
-	throw new Error(`The view generator funciton must return an array`)
+	if(!Array.isArray(oldNodes)) throw new Error(ERROR)
 
 	return (...args)=>
 	{
